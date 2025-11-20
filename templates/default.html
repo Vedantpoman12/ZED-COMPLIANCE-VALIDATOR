@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZED Compliance Validator - Home</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: url('{{ url_for("static", filename="home.jpg") }}') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+            height: 100vh;
+            color: white;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(7, 15, 43, 0.75);
+            z-index: 0;
+        }
+
+        nav {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 70px;
+        }
+
+        nav .logo {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 1px;
+        }
+
+        nav .nav-icons {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        nav .nav-icons a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        nav .nav-icons a:hover {
+            color: #eecf1e;
+        }
+
+        nav .nav-icons i {
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        nav .nav-icons i:hover {
+            color: #eecf1e;
+        }
+
+        .hero {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: calc(100vh - 100px);
+            padding-left: 70px;
+        }
+
+        .hero h1 {
+            font-size: 3.5em;
+            font-weight: 700;
+            line-height: 1.2em;
+            color: white;
+            max-width: 600px;
+        }
+
+        .hero p {
+            margin-top: 20px;
+            font-size: 1.1em;
+            max-width: 500px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .hero .buttons {
+            margin-top: 35px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .hero .btn-login {
+            background: #1e83ee;
+            color: #001a2e;
+            border: none;
+            padding: 12px 35px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .hero .btn-login:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .hero .btn-know {
+            background: none;
+            color: white;
+            border: none;
+            font-weight: 600;
+            font-size: 1em;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .hero .btn-know:hover {
+            color: #eecf1e;
+        }
+
+        .socials {
+            position: absolute;
+            bottom: 30px;
+            left: 70px;
+            z-index: 1;
+            display: flex;
+            gap: 20px;
+        }
+
+        .socials i {
+            font-size: 1.2em;
+            color: white;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .socials i:hover {
+            color: #eecf1e;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 20px 40px;
+            }
+
+            .hero {
+                padding-left: 40px;
+            }
+
+            .hero h1 {
+                font-size: 2.2em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="logo">ZED</div>
+        <div class="nav-icons">
+            <a href="{{ url_for('chatbot') }}">💬 Chatbot</a>
+            <i class="fas fa-search"></i>
+            <i class="fas fa-user-circle"></i>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>ZED Compliance Validator</h1>
+        <p>A document verification system to verify Aadhaar, PAN, and more.</p>
+        <div class="buttons">
+            <a href="{{ url_for('login') }}"><button class="btn-login">LOGIN</button></a>
+            <a href="{{ url_for('home') }}" class="btn-know">Know More →</a>
+        </div>
+    </section>
+
+    <div class="socials">
+        <i class="fab fa-facebook-f"></i>
+        <i class="fab fa-instagram"></i>
+        <i class="fab fa-twitter"></i>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AI Validator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ---- Background gradient (same as home.html) ---- */
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        :root {
+            --primary-color: #1e83eeff;
+            --secondary-color: #f5f5f5;
+            --text-color: #333;
+            --light-gray: #ccc;
+            --dark-gray: #555;
+            --white: #fff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: url('{{ url_for("static", filename="3.jpg") }}') no-repeat center center fixed;
+            display: flex;
+            background-size: cover;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 900px;
+            min-height: 600px;
+            display: flex;
+            background-color: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .welcome-panel {
+            flex-basis: 50%;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            animation: gradientAnimation 15s ease infinite;
+            color: var(--white);
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .welcome-panel h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .welcome-panel p {
+            font-size: 1.1em;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .social-icons a {
+            color: var(--white);
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        .social-icons a:hover {
+            opacity: 1;
+        }
+
+        .login-form-panel {
+            flex-basis: 50%;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .login-form-panel h2 {
+            color: var(--text-color);
+            font-size: 2em;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-gray);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: 'Poppins', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 0.9em;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-group label {
+            color: var(--dark-gray);
+        }
+
+        .options a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .options a:hover {
+            text-decoration: underline;
+        }
+        
+        .btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            color: var(--white);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-google {
+            background-color: var(--white);
+            color: var(--dark-gray);
+            border: 1px solid var(--light-gray);
+            margin-top: 15px;
+        }
+        .btn-google:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--dark-gray);
+        }
+
+        .signup-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .login-wrapper {
+                flex-direction: column;
+                min-height: 100vh;
+            }
+            .welcome-panel {
+                display: none; /* Hide the welcome panel on small screens for simplicity */
+            }
+            .login-form-panel {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="welcome-panel">
+            <div>
+                <h1>Welcome</h1>
+                <p>Please enter your details to access your account and manage your documents.</p>
+            </div>
+            <div class="social-icons">
+                <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                </a>
+                <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+                </a>
+                <a href="#">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                </a>
+            </div>
+        </div>
+        <div class="login-form-panel">
+            <h2>Login</h2>
+            <form action="/login" method="post">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="username" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                <div class="options">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="remember">
+                        <label for="remember">Remember for 30 days</label>
+                    </div>
+                    <a href="#">Forgot password</a>
+                </div>
+                <button type="submit" class="btn btn-primary">Log in</button>
+                <a href="#" class="btn btn-google">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.5 12.5c0-1.5-.2-2.8-.5-4H12v5.5h6.3c-.3 1.4-1.2 2.6-2.5 3.4v2.3h3.1c1.8-1.6 2.8-4 2.8-6.7z"/><path d="M12 23c3.2 0 5.9-1.1 7.8-2.9l-3.1-2.3c-1.1.7-2.5 1.2-4.1 1.2-3.2 0-5.8-2.1-6.8-5.1H2.1v2.3C4 20 7.7 23 12 23z"/><path d="M5.2 14.2c-.2-1.3-.2-2.6 0-3.9V8H2.1c-1.7 3.3-1.7 7.3 0 10.6l3.1-2.4z"/><path d="M12 5.1c1.7 0 3.3.6 4.5 1.8l2.8-2.8C17.9 1.4 15.2 0 12 0 7.7 0 4 3 2.1 7.3l3.1 2.4c1-3 3.6-5.1 6.8-5.1z"/></svg>
+                    Sign in with Google
+                </a>
+            </form>
+            <div class="signup-link">
+                <p>Don't have an account? <a href="#">Sign up</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

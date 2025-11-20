@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>OCR Results</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f7f8ff;
+      margin: 0;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .doc-box {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      width: 80%;
+      max-width: 900px;
+      margin-bottom: 30px;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    pre {
+      background: #eef1fb;
+      padding: 15px;
+      border-radius: 10px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    a {
+      text-decoration: none;
+      background: #546ef3;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>🧠 OCR Extraction Results</h2>
+
+  {% for result in results %}
+  <div class="doc-box">
+    <h3>Document {{ loop.index }}</h3>
+    <img src="{{ result.image_path }}" alt="Uploaded Document">
+
+    {% if result.verification %}
+    <div
+      style="margin-bottom: 15px; padding: 10px; border-radius: 5px; background-color: {% if result.verification.status == 'Valid' %}#d4edda{% else %}#f8d7da{% endif %}; color: {% if result.verification.status == 'Valid' %}#155724{% else %}#721c24{% endif %};">
+      <strong>Status:</strong> {{ result.verification.status }}<br>
+      <strong>Message:</strong> {{ result.verification.message }}<br>
+      {% if result.verification.pan_number %}
+      <strong>PAN Number:</strong> {{ result.verification.pan_number }}
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <pre>{{ result.extracted_text }}</pre>
+  </div>
+  {% endfor %}
+
+  <a href="{{ url_for('index') }}">← Upload More Documents</a>
+</body>
+
+</html>

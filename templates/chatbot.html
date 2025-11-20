@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZED Chatbot - Document Verification Assistant</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .chat-container {
+      width: 90%;
+      max-width: 800px;
+      height: 90vh;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    .chat-nav {
+      background: #f0f0f0;
+      padding: 10px 20px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .chat-nav a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+      margin-right: 20px;
+    }
+
+    .chat-nav a:hover {
+      text-decoration: underline;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+
+    .message {
+      margin-bottom: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message.user {
+      align-items: flex-end;
+    }
+
+    .message.bot {
+      align-items: flex-start;
+    }
+
+    .message-bubble {
+      max-width: 70%;
+      padding: 12px 18px;
+      border-radius: 18px;
+      word-wrap: break-word;
+    }
+
+    .message.user .message-bubble {
+      background: #667eea;
+      color: white;
+    }
+
+    .message.bot .message-bubble {
+      background: white;
+      border: 1px solid #ddd;
+      color: #333;
+    }
+
+    .chat-input-container {
+      padding: 20px;
+      background: white;
+      border-top: 1px solid #ddd;
+      display: flex;
+      gap: 10px;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #667eea;
+      border-radius: 25px;
+      font-size: 1em;
+      outline: none;
+    }
+
+    .send-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .send-btn:hover {
+      background: #5568d3;
+    }
+
+    .typing-indicator {
+      display: none;
+      padding: 10px;
+      font-style: italic;
+      color: #666;
+    }
+
+    .typing-indicator.active {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      🤖 ZED Document Verification Assistant
+    </div>
+
+    <div class="chat-nav">
+      <a href="{{ url_for('default') }}">Home</a>
+      <a href="{{ url_for('index') }}">Upload Documents</a>
+      <a href="{{ url_for('login') }}">Login</a>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      <div class="message bot">
+        <div class="message-bubble">
+          Hello! I'm your document verification assistant. How can I help you today?
+          <br><br>
+          You can ask me about:
+          <ul style="margin-top: 10px; margin-left: 20px;">
+            <li>PAN card verification</li>
+            <li>Document upload process</li>
+            <li>Supported document types</li>
+            <li>How our AI works</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="typing-indicator" id="typingIndicator">Bot is typing...</div>
+
+    <div class="chat-input-container">
+      <input type="text" class="chat-input" id="messageInput" placeholder="Type your message..."
+        onkeypress="handleKeyPress(event)">
+      <button class="send-btn" onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const responses = {
+      'pan': 'PAN cards can be verified by uploading them on our document upload page. Our AI extracts the PAN number and validates its format.',
+      'upload': 'To upload documents, click on "Upload Documents" in the navigation above, then select up to 3 documents and click "Upload & Check".',
+      'documents': 'We support PAN cards, Aadhaar cards, and GST certificates. You can upload images (JPG, PNG) or PDFs.',
+      'ai': 'Our AI uses OCR (Optical Character Recognition) and machine learning to extract text from documents and verify their authenticity.',
+      'help': 'I can help you with document verification, upload process, and answer questions about our services. Just ask!',
+      'hello': 'Hello! How can I assist you today?',
+      'hi': 'Hi there! What would you like to know about document verification?',
+      'thanks': 'You\'re welcome! Let me know if you need anything else.',
+      'default': 'I\'m here to help with document verification. Could you please rephrase your question or try asking about PAN cards, uploads, or our AI system?'
+    };
+
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const message = input.value.trim();
+
+      if (!message) return;
+
+      // Add user message
+      addMessage(message, 'user');
+      input.value = '';
+
+      // Show typing indicator
+      const typingIndicator = document.getElementById('typingIndicator');
+      typingIndicator.classList.add('active');
+
+      // Simulate bot response
+      setTimeout(() => {
+        typingIndicator.classList.remove('active');
+        const response = getBotResponse(message.toLowerCase());
+        addMessage(response, 'bot');
+      }, 1000);
+    }
+
+    function addMessage(text, sender) {
+      const messagesContainer = document.getElementById('chatMessages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${sender}`;
+
+      const bubbleDiv = document.createElement('div');
+      bubbleDiv.className = 'message-bubble';
+      bubbleDiv.textContent = text;
+
+      messageDiv.appendChild(bubbleDiv);
+      messagesContainer.appendChild(messageDiv);
+
+      // Scroll to bottom
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function getBotResponse(message) {
+      for (const [key, response] of Object.entries(responses)) {
+        if (message.includes(key)) {
+          return response;
+        }
+      }
+      return responses.default;
+    }
+
+    function handleKeyPress(event) {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
+    }
+  </script>
+</body>
+
+</html>

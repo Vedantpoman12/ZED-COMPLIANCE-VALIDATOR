@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About ZED - AI Document Validator</title>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: url('{{ url_for("static", filename="about_us.jpg") }}') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 50px auto;
+            background: rgba(0, 0, 0, 0.65);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        a.button {
+            background-color: #1e83ee;
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        a.button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        h1 {
+            color: #1e83ee;
+        }
+
+        h2 {
+            color: #23d5ab;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div style="text-align: left; margin-bottom: 20px;">
+            <a href="{{ url_for('default') }}" class="button">← Home</a>
+        </div>
+
+        <h1>Welcome to ZED Compliance Validator</h1>
+        <p>This document verification system uses advanced machine learning models to detect, identify, and validate
+            documents such as PAN cards, GST certificates, and Aadhaar cards.</p>
+
+        <h2>What is AI?</h2>
+        <p>Artificial intelligence (AI) is the intelligence of machines or software, as opposed to the intelligence
+            of living beings, primarily of humans. It is a field of study in computer science that develops and
+            studies intelligent machines. Such machines may be called AIs.</p>
+
+        <h2>How it Works?</h2>
+
+        <h3>Upload Document:</h3>
+        <p>Users upload a scanned image or PDF of the document.</p>
+
+        <h3>AI Processing:</h3>
+        <p>The ML model extracts key features such as logos, text patterns, and formats using OCR (Optical
+            Character Recognition) and image analysis.</p>
+
+        <h3>Classification:</h3>
+        <p>The model identifies which type of document it is — PAN, Aadhaar, GST certificate, etc.</p>
+
+        <h3>Verification:</h3>
+        <p>The system checks for validity markers, format rules, and consistency to verify the document.</p>
+
+        <h3>Result:</h3>
+        <p>The verified result and document type are displayed instantly on the screen.</p>
+
+        <div style="text-align: right; margin-top: 30px;">
+            <a href="{{ url_for('login') }}" class="button">Login →</a>
+        </div>
+    </div>
+</body>
+
+</html>
