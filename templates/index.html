@@ -110,47 +110,31 @@
             background-color: #0056b3;
         }
     </style>
-</head>
+    <input type="file" name="document1" hidden onchange="showFileName(this, 'file1-name')"
+        accept=".jpg,.jpeg,.png,.pdf">
+    </label>
+    <p id="file1-name" class="file-name">No file chosen</p>
+    </div>
 
-<body>
-    <div class="container">
-        <header>Automated ZED Compliance Validator</header>
+    <div class="file-container">
+        <label class="file-btn">Choose file
+            <input type="file" name="document2" hidden onchange="showFileName(this, 'file2-name')"
+                accept=".jpg,.jpeg,.png,.pdf">
+        </label>
+        <p id="file2-name" class="file-name">No file chosen</p>
+    </div>
 
-        <nav>
-            <a href="{{ url_for('default') }}">Home</a>
-            <a href="{{ url_for('login') }}">Login</a>
-            <a href="{{ url_for('chatbot') }}">Chatbot</a>
-        </nav>
+    <div class="file-container">
+        <label class="file-btn">Choose file
+            <input type="file" name="document3" hidden onchange="showFileName(this, 'file3-name')"
+                accept=".jpg,.jpeg,.png,.pdf">
+        </label>
+        <p id="file3-name" class="file-name">No file chosen</p>
+    </div>
+    </div>
 
-        <form action="/ocr" method="POST" enctype="multipart/form-data">
-            <div class="file-inputs">
-                <div class="file-container">
-                    <label class="file-btn">Choose file
-                        <input type="file" name="document1" hidden onchange="showFileName(this, 'file1-name')"
-                            accept=".jpg,.jpeg,.png,.pdf">
-                    </label>
-                    <p id="file1-name" class="file-name">No file chosen</p>
-                </div>
-
-                <div class="file-container">
-                    <label class="file-btn">Choose file
-                        <input type="file" name="document2" hidden onchange="showFileName(this, 'file2-name')"
-                            accept=".jpg,.jpeg,.png,.pdf">
-                    </label>
-                    <p id="file2-name" class="file-name">No file chosen</p>
-                </div>
-
-                <div class="file-container">
-                    <label class="file-btn">Choose file
-                        <input type="file" name="document3" hidden onchange="showFileName(this, 'file3-name')"
-                            accept=".jpg,.jpeg,.png,.pdf">
-                    </label>
-                    <p id="file3-name" class="file-name">No file chosen</p>
-                </div>
-            </div>
-
-            <button type="submit" class="upload-btn">Upload & Check</button>
-        </form>
+    <button type="submit" class="upload-btn">Upload & Check</button>
+    </form>
     </div>
 
     <script>
@@ -165,6 +149,6 @@
             }
         }
     </script>
-</body>
+    </body>
 
 </html>

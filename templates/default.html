@@ -144,26 +144,6 @@
             color: #eecf1e;
         }
 
-        .socials {
-            position: absolute;
-            bottom: 30px;
-            left: 70px;
-            z-index: 1;
-            display: flex;
-            gap: 20px;
-        }
-
-        .socials i {
-            font-size: 1.2em;
-            color: white;
-            transition: 0.3s;
-            cursor: pointer;
-        }
-
-        .socials i:hover {
-            color: #eecf1e;
-        }
-
         @media (max-width: 768px) {
             nav {
                 padding: 20px 40px;
@@ -184,7 +164,6 @@
     <nav>
         <div class="logo">ZED</div>
         <div class="nav-icons">
-            <a href="{{ url_for('chatbot') }}">💬 Chatbot</a>
             <i class="fas fa-search"></i>
             <i class="fas fa-user-circle"></i>
         </div>
@@ -194,16 +173,10 @@
         <h1>ZED Compliance Validator</h1>
         <p>A document verification system to verify Aadhaar, PAN, and more.</p>
         <div class="buttons">
-            <a href="{{ url_for('login') }}"><button class="btn-login">LOGIN</button></a>
+            <a href="{{ url_for('chatbot') }}"><button class="btn-login">CHATBOT</button></a>
             <a href="{{ url_for('home') }}" class="btn-know">Know More →</a>
         </div>
     </section>
-
-    <div class="socials">
-        <i class="fab fa-facebook-f"></i>
-        <i class="fab fa-instagram"></i>
-        <i class="fab fa-twitter"></i>
-    </div>
 </body>
 
 </html>

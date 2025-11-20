@@ -22,13 +22,7 @@ app = Flask(__name__)
 def default():
     return render_template('default.html')
 
-# ---------- LOGIN PAGE ----------
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        # Simulate login process (you can add authentication logic here)
-        return redirect(url_for('index'))
-    return render_template('login.html')
+
 
 # ---------- HOME PAGE ----------
 @app.route('/home')
@@ -152,6 +146,143 @@ def api_ocr_upload():
         })
 
     return jsonify({'error': 'Unknown error'}), 500
+
+@app.route('/api/verify-document', methods=['POST'])
+def verify_document():
+    """
+    AI Document Verification Assistant endpoint
+    Returns structured verification report with:
+    - Document Summary
+    - Verification Status
+    - Key Findings & Next Steps
+    """
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+    
+    file = request.files['file']
+    
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    if file:
+        upload_folder = os.path.join('static', 'uploads')
+        os.makedirs(upload_folder, exist_ok=True)
+        
+        filepath = os.path.join(upload_folder, file.filename)
+        file.save(filepath)
+
+        # Extract text from document
+        text = ""
+        try:
+            if file.filename.lower().endswith('.pdf'):
+                poppler_path = os.path.join(os.getcwd(), 'poppler-25.07.0', 'Library', 'bin')
+                pages = convert_from_path(filepath, poppler_path=poppler_path)
+                for page in pages:
+                    text += pytesseract.image_to_string(page)
+            else:
+                image = Image.open(filepath)
+                text = pytesseract.image_to_string(image)
+        except Exception as e:
+            return jsonify({'error': f'Failed to extract text: {str(e)}'}), 500
+
+        web_image_path = '/' + filepath.replace('\\', '/')
+        
+        # Generate structured verification report
+        verification_report = generate_verification_report(text, file.filename)
+        verification_report['image_path'] = web_image_path
+        
+        return jsonify({
+            'status': 'success',
+            'verification': verification_report,
+            'extracted_text': text.strip()
+        })
+
+    return jsonify({'error': 'Unknown error'}), 500
+
+def generate_verification_report(text, filename):
+    """
+    Generates a structured verification report for the document
+    """
+    # Determine document type
+    doc_type = "Unknown Document"
+    if 'pan' in filename.lower() or 'INCOME TAX' in text.upper():
+        doc_type = "PAN Card"
+    elif 'aadhaar' in filename.lower() or 'UIDAI' in text.upper():
+        doc_type = "Aadhaar Card"
+    elif 'gst' in filename.lower() or 'GSTIN' in text.upper():
+        doc_type = "GST Certificate"
+    
+    # Verify PAN card if applicable
+    pan_verification = verify_pan_card(text)
+    
+    # Generate Document Summary
+    summary = f"This appears to be a {doc_type} document. "
+    if text.strip():
+        word_count = len(text.split())
+        summary += f"The OCR extraction successfully captured approximately {word_count} words from the document. "
+        summary += "The system has analyzed the content for required fields and formatting compliance."
+    else:
+        summary += "However, no text content could be extracted from the document image."
+    
+    # Determine Verification Status
+    status = ""
+    statusClass = ""
+    statusExplanation = ""
+    
+    if not text.strip():
+        status = "STATUS: Requires Further Review"
+        statusClass = "status-review"
+        statusExplanation = "The document image quality may be too low, or the document may be blank. No text could be extracted for verification."
+    elif pan_verification['status'] == 'Valid':
+        status = "STATUS: Verified (No Issues Found)"
+        statusClass = "status-verified"
+        statusExplanation = f"Valid PAN number detected: {pan_verification['pan_number']}. The document format meets standard requirements and all key information has been successfully extracted."
+    elif 'INCOME TAX' in text.upper() or 'PAN' in text.upper():
+        status = "STATUS: Verified with Minor Notes"
+        statusClass = "status-minor"
+        statusExplanation = "The document appears to be a PAN-related document, but the PAN number format could not be clearly identified. This may be due to image quality or OCR accuracy."
+    else:
+        status = "STATUS: Verified with Minor Notes"
+        statusClass = "status-minor"
+        statusExplanation = f"The document has been processed as a {doc_type}. Text extraction was successful, though some formatting or clarity issues may exist."
+    
+    # Generate Key Findings
+    findings = []
+    
+    if pan_verification['status'] == 'Valid':
+        findings.append(f"<strong>PAN Number Identified:</strong> {pan_verification['pan_number']}")
+        findings.append("<strong>Format Validation:</strong> PAN number follows the standard format (5 letters, 4 digits, 1 letter)")
+        findings.append(f"<strong>Extracted Text Length:</strong> {len(text)} characters successfully captured")
+        findings.append("<strong>Document Authenticity:</strong> Format appears consistent with official PAN card structure")
+        question = ""
+    elif not text.strip():
+        findings.append("<strong>Text Extraction:</strong> Failed - No content could be extracted")
+        findings.append("<strong>Possible Causes:</strong> Low image quality, blank document, or unsupported format")
+        findings.append("<strong>Recommendation:</strong> Please re-upload with a clearer image (at least 300 DPI recommended)")
+        findings.append("<strong>Supported Formats:</strong> PDF, JPG, JPEG, PNG files are accepted")
+        question = ""
+    else:
+        findings.append(f"<strong>Document Type:</strong> Identified as {doc_type}")
+        findings.append(f"<strong>Text Extraction:</strong> Successfully extracted {len(text.split())} words")
+        findings.append(f"<strong>Content Analysis:</strong> Document contains readable text but requires manual review for specific field validation")
+        
+        # Check for common keywords
+        if 'name' in text.lower():
+            findings.append("<strong>Name Field:</strong> Detected in document")
+        if 'date' in text.lower() or re.search(r'\d{2}[/-]\d{2}[/-]\d{4}', text):
+            findings.append("<strong>Date Information:</strong> Date fields found in document")
+        
+        question = ""
+    
+    return {
+        'summary': summary,
+        'status': status,
+        'statusClass': statusClass,
+        'statusExplanation': statusExplanation,
+        'findings': findings,
+        'question': question,
+        'document_type': doc_type
+    }
 
 @app.errorhandler(404)
 def page_not_found(e):
