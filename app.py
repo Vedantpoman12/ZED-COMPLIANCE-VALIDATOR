@@ -15,7 +15,12 @@ TESSERACT_PATH = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
 
 
+import chatbot_logic  # <--- NEW IMPORT
+
 app = Flask(__name__)
+
+# Initialize Chatbot Knowledge Base
+chatbot_logic.init_chatbot()
 
 # ---------- DEFAULT (Landing) PAGE ----------
 @app.route('/')
@@ -191,6 +196,15 @@ def verify_document():
         verification_report = generate_verification_report(text, file.filename)
         verification_report['image_path'] = web_image_path
         
+        # --- NEW: Learn from the document ---
+        chatbot_logic.clear_knowledge_base() # Clear previous context
+        success, message = chatbot_logic.add_document_to_knowledge_base(filepath, file.filename)
+        if success:
+            verification_report['learning_status'] = "Document successfully learned by the chatbot!"
+        else:
+            verification_report['learning_status'] = f"Warning: Could not learn document ({message})"
+        # ------------------------------------
+
         return jsonify({
             'status': 'success',
             'verification': verification_report,
@@ -199,24 +213,38 @@ def verify_document():
 
     return jsonify({'error': 'Unknown error'}), 500
 
+@app.route('/api/chat', methods=['POST'])
+def chat():
+    data = request.json
+    user_message = data.get('message', '')
+    
+    if not user_message:
+        return jsonify({'response': 'Please say something!'})
+        
+    response = chatbot_logic.query_chatbot(user_message)
+    return jsonify({'response': response})
+
 def generate_verification_report(text, filename):
     """
     Generates a structured verification report for the document
     """
     # Determine document type
-    doc_type = "Unknown Document"
-    if 'pan' in filename.lower() or 'INCOME TAX' in text.upper():
+    doc_type = "Document"
+    is_pan_document = False
+    
+    if 'pan' in filename.lower() or 'INCOME TAX' in text.upper() or 'PERMANENT ACCOUNT NUMBER' in text.upper():
         doc_type = "PAN Card"
-    elif 'aadhaar' in filename.lower() or 'UIDAI' in text.upper():
+        is_pan_document = True
+    elif 'aadhaar' in filename.lower() or 'UIDAI' in text.upper() or 'UNIQUE IDENTIFICATION AUTHORITY' in text.upper():
         doc_type = "Aadhaar Card"
-    elif 'gst' in filename.lower() or 'GSTIN' in text.upper():
+    elif 'gst' in filename.lower() or 'GSTIN' in text.upper() or 'GOODS AND SERVICES TAX' in text.upper():
         doc_type = "GST Certificate"
     
-    # Verify PAN card if applicable
+    # Verify PAN card ONLY if it looks like a PAN document or we found a PAN number
     pan_verification = verify_pan_card(text)
     
     # Generate Document Summary
-    summary = f"This appears to be a {doc_type} document. "
+    summary = f"This appears to be a {doc_type}. "
     if text.strip():
         word_count = len(text.split())
         summary += f"The OCR extraction successfully captured approximately {word_count} words from the document. "
@@ -233,23 +261,23 @@ def generate_verification_report(text, filename):
         status = "STATUS: Requires Further Review"
         statusClass = "status-review"
         statusExplanation = "The document image quality may be too low, or the document may be blank. No text could be extracted for verification."
-    elif pan_verification['status'] == 'Valid':
+    elif is_pan_document and pan_verification['status'] == 'Valid':
         status = "STATUS: Verified (No Issues Found)"
         statusClass = "status-verified"
         statusExplanation = f"Valid PAN number detected: {pan_verification['pan_number']}. The document format meets standard requirements and all key information has been successfully extracted."
-    elif 'INCOME TAX' in text.upper() or 'PAN' in text.upper():
+    elif is_pan_document:
         status = "STATUS: Verified with Minor Notes"
         statusClass = "status-minor"
         statusExplanation = "The document appears to be a PAN-related document, but the PAN number format could not be clearly identified. This may be due to image quality or OCR accuracy."
     else:
-        status = "STATUS: Verified with Minor Notes"
-        statusClass = "status-minor"
-        statusExplanation = f"The document has been processed as a {doc_type}. Text extraction was successful, though some formatting or clarity issues may exist."
+        status = "STATUS: Processed Successfully"
+        statusClass = "status-verified"
+        statusExplanation = f"The document has been processed as a {doc_type}. Text extraction was successful. You can now ask questions about its content."
     
     # Generate Key Findings
     findings = []
     
-    if pan_verification['status'] == 'Valid':
+    if is_pan_document and pan_verification['status'] == 'Valid':
         findings.append(f"<strong>PAN Number Identified:</strong> {pan_verification['pan_number']}")
         findings.append("<strong>Format Validation:</strong> PAN number follows the standard format (5 letters, 4 digits, 1 letter)")
         findings.append(f"<strong>Extracted Text Length:</strong> {len(text)} characters successfully captured")
@@ -264,7 +292,7 @@ def generate_verification_report(text, filename):
     else:
         findings.append(f"<strong>Document Type:</strong> Identified as {doc_type}")
         findings.append(f"<strong>Text Extraction:</strong> Successfully extracted {len(text.split())} words")
-        findings.append(f"<strong>Content Analysis:</strong> Document contains readable text but requires manual review for specific field validation")
+        findings.append(f"<strong>Content Analysis:</strong> Document contains readable text. You can ask the chatbot for specific details.")
         
         # Check for common keywords
         if 'name' in text.lower():

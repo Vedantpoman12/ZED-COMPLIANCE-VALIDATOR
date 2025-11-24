@@ -76,7 +76,7 @@
     }
 
     .chat-nav a {
-      color:#FFD700;
+      color: #FFD700;
       text-decoration: none;
       font-weight: 600;
       padding: 8px 15px;
@@ -533,6 +533,11 @@
           <p style="margin-top: 15px; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; border-left: 4px solid rgba(255, 255, 255, 0.5);">
             <strong><i class="fas fa-question-circle"></i> ${verification.question}</strong>
           </p>` : ''}
+          
+          ${verification.learning_status ? `
+          <p style="margin-top: 15px; padding: 10px; background: rgba(74, 222, 128, 0.1); border-radius: 8px; border: 1px solid rgba(74, 222, 128, 0.3); color: #4ade80; font-size: 0.9em;">
+            <i class="fas fa-brain"></i> ${verification.learning_status}
+          </p>` : ''}
         </div>
       `;
 
@@ -547,7 +552,7 @@
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
-    function sendMessage() {
+    async function sendMessage() {
       const input = document.getElementById('messageInput');
       const message = input.value.trim();
 
@@ -561,12 +566,25 @@
       const typingIndicator = document.getElementById('typingIndicator');
       typingIndicator.classList.add('active');
 
-      // Simulate bot response
-      setTimeout(() => {
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ message: message })
+        });
+
+        const data = await response.json();
+
         typingIndicator.classList.remove('active');
-        const response = getBotResponse(message.toLowerCase());
-        addMessage(response, 'bot');
-      }, 1000);
+        addMessage(data.response, 'bot');
+
+      } catch (error) {
+        typingIndicator.classList.remove('active');
+        console.error('Chat error:', error);
+        addMessage('Sorry, I am having trouble connecting to the server.', 'bot');
+      }
     }
 
     function addMessage(text, sender) {
@@ -583,28 +601,6 @@
 
       // Scroll to bottom
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-
-    function getBotResponse(message) {
-      const responses = {
-        'upload': 'To upload a document for verification, simply click the "Upload Document" button below and select your file. I support PDF, JPG, JPEG, and PNG formats.',
-        'pan': 'I can verify PAN cards by extracting the text and checking the PAN number format. PAN numbers follow the pattern: 5 letters, 4 numbers, and 1 letter (e.g., ABCDE1234F).',
-        'aadhaar': 'Aadhaar card verification is supported! Upload your Aadhaar card document, and I\'ll extract and verify the information.',
-        'gst': 'GST certificate verification is available. Upload your GST document for analysis and verification.',
-        'how': 'I use advanced OCR (Optical Character Recognition) technology to extract text from your documents, then analyze the content for consistency, completeness, and validity.',
-        'help': 'I can help you verify documents, extract text, and provide detailed analysis reports. Just upload a document or ask me a question!',
-        'hello': 'Hello! Ready to help you verify documents. Upload one using the button below!',
-        'hi': 'Hi there! What document would you like me to verify today?',
-        'thanks': 'You\'re very welcome! Feel free to upload more documents anytime.',
-        'default': 'I\'m here to help with document verification. You can upload a document using the button below, or ask me about PAN cards, Aadhaar, GST certificates, or how the verification process works.'
-      };
-
-      for (const [key, response] of Object.entries(responses)) {
-        if (message.includes(key)) {
-          return response;
-        }
-      }
-      return responses.default;
     }
 
     function handleKeyPress(event) {
