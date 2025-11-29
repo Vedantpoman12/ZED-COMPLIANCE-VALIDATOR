@@ -22,6 +22,20 @@ app = Flask(__name__)
 # Initialize Chatbot Knowledge Base
 chatbot_logic.init_chatbot()
 
+# Load Bronze Certificate User Manual if not already loaded
+import os as _os
+bronze_cert_path = _os.path.join(_os.getcwd(), 'User_Manual_Bronze_Certification_20.04.2022.pdf')
+if _os.path.exists(bronze_cert_path) and chatbot_logic.index.ntotal == 0:
+    print("Loading Bronze Certificate User Manual into chatbot...")
+    success, msg = chatbot_logic.add_document_to_knowledge_base(
+        bronze_cert_path, 
+        'User_Manual_Bronze_Certification_20.04.2022.pdf'
+    )
+    if success:
+        print(f"✓ {msg}")
+    else:
+        print(f"✗ Failed to load manual: {msg}")
+
 # ---------- DEFAULT (Landing) PAGE ----------
 @app.route('/')
 def default():
