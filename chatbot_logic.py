@@ -14,6 +14,8 @@ VECTOR_DIMENSION = 2048
 INDEX_FILE = "chatbot_index.faiss"
 METADATA_FILE = "chatbot_metadata.pkl"
 POPPLER_PATH = os.path.join(os.getcwd(), 'poppler-25.07.0', 'Library', 'bin')
+TESSERACT_PATH = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
 
 # Global state
 index = None
