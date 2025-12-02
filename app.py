@@ -51,6 +51,52 @@ def index():
 def chatbot():
     return render_template('chatbot.html')
 
+@app.route('/gallery')
+def gallery():
+    from datetime import datetime
+    
+    upload_folder = os.path.join('static', 'uploads')
+    documents = []
+    
+    if os.path.exists(upload_folder):
+        for filename in os.listdir(upload_folder):
+            filepath = os.path.join(upload_folder, filename)
+            
+            if os.path.isfile(filepath):
+                file_size = os.path.getsize(filepath)
+                if file_size < 1024:
+                    size_str = f"{file_size} B"
+                elif file_size < 1024 * 1024:
+                    size_str = f"{file_size / 1024:.1f} KB"
+                else:
+                    size_str = f"{file_size / (1024 * 1024):.1f} MB"
+                
+                mod_time = os.path.getmtime(filepath)
+                date_str = datetime.fromtimestamp(mod_time).strftime('%Y-%m-%d %H:%M')
+                
+                doc_type = 'other'
+                if 'pan' in filename.lower() or any(filename.endswith(ext) for ext in ['.jpg', '.jpeg', '.png'] if len(filename) == 14):
+                    doc_type = 'pan'
+                elif 'aadhar' in filename.lower() or 'aadhaar' in filename.lower():
+                    doc_type = 'aadhaar'
+                elif 'gst' in filename.lower():
+                    doc_type = 'gst'
+                
+                file_format = 'pdf' if filename.lower().endswith('.pdf') else 'image'
+                
+                documents.append({
+                    'name': filename,
+                    'path': f'/static/uploads/{filename}',
+                    'size': size_str,
+                    'date': date_str,
+                    'type': doc_type,
+                    'format': file_format
+                })
+        
+        documents.sort(key=lambda x: x['date'], reverse=True)
+    
+    return render_template('gallery.html', documents=documents)
+
 @app.route('/ocr', methods=['POST'])
 def ocr_upload():
     files = [request.files.get('document1'),
@@ -261,7 +307,20 @@ def generate_verification_report(text, filename):
     statusClass = ""
     statusExplanation = ""
     
-    if not text.strip():
+    if authenticity_result and not authenticity_result['is_authentic']:
+        status = "STATUS: SUSPICIOUS - Possible Fake Document"
+        statusClass = "status-review"
+        statusExplanation = f"⚠ WARNING: This document shows signs of being fake or altered. Confidence: {authenticity_result['confidence']:.1%}. {authenticity_result['reason']}"
+    elif authenticity_result and authenticity_result['is_authentic']:
+        if is_pan_document and pan_verification['status'] == 'Valid':
+            status = "STATUS: Verified (Authentic Document)"
+            statusClass = "status-verified"
+            statusExplanation = f"✓ This document appears authentic (Confidence: {authenticity_result['confidence']:.1%}). Valid PAN number detected: {pan_verification['pan_number']}."
+        else:
+            status = "STATUS: Likely Authentic"
+            statusClass = "status-verified"
+            statusExplanation = f"✓ Document appears authentic based on comparison with known genuine documents (Confidence: {authenticity_result['confidence']:.1%})."
+    elif not text.strip():
         status = "STATUS: Requires Further Review"
         statusClass = "status-review"
         statusExplanation = "The document image quality may be too low, or the document may be blank. No text could be extracted for verification."

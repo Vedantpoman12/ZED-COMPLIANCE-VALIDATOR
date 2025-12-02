@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Gallery - ZED Validator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2em;
+        }
+
+        .header .stats {
+            text-align: right;
+        }
+
+        .header .stats .count {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .header .stats .label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .nav-buttons {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-buttons a {
+            background: white;
+            color: #667eea;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-buttons a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .filters {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filters select,
+        .filters input {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+        }
+
+        .filters select:focus,
+        .filters input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .document-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .document-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .document-preview {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+
+        .pdf-preview {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .pdf-preview i {
+            font-size: 4em;
+            color: #667eea;
+        }
+
+        .document-info {
+            padding: 20px;
+        }
+
+        .document-info .name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            word-break: break-all;
+            font-size: 0.95em;
+        }
+
+        .document-info .meta {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .document-info .type-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .type-pan {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .type-aadhaar {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .type-gst {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .type-other {
+            background: #f5f5f5;
+            color: #616161;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+        }
+
+        .empty-state i {
+            font-size: 5em;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h2 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #999;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            overflow: auto;
+        }
+
+        .modal.active {
+            display: block;
+        }
+
+        .modal-content {
+            margin: 50px auto;
+            max-width: 90%;
+            max-height: 90vh;
+            display: block;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="nav-buttons">
+            <a href="{{ url_for('default') }}"><i class="fas fa-home"></i> Home</a>
+            <a href="{{ url_for('chatbot') }}"><i class="fas fa-robot"></i> Chatbot</a>
+        </div>
+
+        <div class="header">
+            <div>
+                <h1><i class="fas fa-images"></i> Document Gallery</h1>
+                <p style="color: #666; margin-top: 5px;">All uploaded documents</p>
+            </div>
+            <div class="stats">
+                <div class="count">{{ documents|length }}</div>
+                <div class="label">Documents</div>
+            </div>
+        </div>
+
+        <div class="filters">
+            <i class="fas fa-filter"></i>
+            <select id="typeFilter" onchange="filterDocuments()">
+                <option value="all">All Types</option>
+                <option value="pan">PAN Cards</option>
+                <option value="aadhaar">Aadhaar Cards</option>
+                <option value="gst">GST Certificates</option>
+                <option value="pdf">PDFs Only</option>
+                <option value="image">Images Only</option>
+            </select>
+            <input type="text" id="searchBox" placeholder="Search by filename..." onkeyup="filterDocuments()">
+        </div>
+
+        {% if documents %}
+        <div class="gallery" id="gallery">
+            {% for doc in documents %}
+            <div class="document-card" data-type="{{ doc.type }}" data-format="{{ doc.format }}"
+                data-name="{{ doc.name|lower }}" onclick="openModal('{{ doc.path }}', '{{ doc.format }}')">
+                {% if doc.format == 'pdf' %}
+                <div class="pdf-preview">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>PDF Document</span>
+                </div>
+                {% else %}
+                <img src="{{ doc.path }}" alt="{{ doc.name }}" class="document-preview">
+                {% endif %}
+
+                <div class="document-info">
+                    <div class="name">{{ doc.name }}</div>
+                    <div class="meta">
+                        <span><i class="fas fa-calendar"></i> {{ doc.date }}</span>
+                        <span><i class="fas fa-file"></i> {{ doc.size }}</span>
+                    </div>
+                    <span class="type-badge type-{{ doc.type }}">{{ doc.type|upper }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-folder-open"></i>
+            <h2>No documents uploaded yet</h2>
+            <p>Start uploading documents through the chatbot to see them here</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="modal-close">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <script>
+        function openModal(path, format) {
+            if (format !== 'pdf') {
+                document.getElementById('imageModal').classList.add('active');
+                document.getElementById('modalImage').src = path;
+            } else {
+                window.open(path, '_blank');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').classList.remove('active');
+        }
+
+        function filterDocuments() {
+            const typeFilter = document.getElementById('typeFilter').value;
+            const searchText = document.getElementById('searchBox').value.toLowerCase();
+            const cards = document.querySelectorAll('.document-card');
+
+            cards.forEach(card => {
+                const cardType = card.getAttribute('data-type');
+                const cardFormat = card.getAttribute('data-format');
+                const cardName = card.getAttribute('data-name');
+
+                let showType = typeFilter === 'all' ||
+                    cardType === typeFilter ||
+                    (typeFilter === 'pdf' && cardFormat === 'pdf') ||
+                    (typeFilter === 'image' && cardFormat !== 'pdf');
+
+                let showSearch = searchText === '' || cardName.includes(searchText);
+
+                card.style.display = (showType && showSearch) ? 'block' : 'none';
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -35,18 +35,48 @@ class DocumentAuthenticityDetector:
             self.metadata_store = {}
     
     def extract_text_from_file(self, filepath):
+        from PIL import ImageEnhance
+        
         text = ""
         try:
             if filepath.lower().endswith('.pdf'):
-                pages = convert_from_path(filepath, poppler_path=POPPLER_PATH)
-                for page in pages:
-                    text += pytesseract.image_to_string(page) + "\n"
+                pages = convert_from_path(filepath, poppler_path=POPPLER_PATH, dpi=300)
+                print(f"  Converted PDF to {len(pages)} page(s)")
+                
+                for i, page in enumerate(pages):
+                    page = page.convert('L')
+                    
+                    enhancer = ImageEnhance.Contrast(page)
+                    page = enhancer.enhance(2.0)
+                    
+                    enhancer = ImageEnhance.Sharpness(page)
+                    page = enhancer.enhance(1.5)
+                    
+                    page_text = pytesseract.image_to_string(page, config='--psm 6 --oem 3')
+                    text += page_text + "\n"
+                    print(f"  Page {i+1}: Extracted {len(page_text)} characters")
             else:
                 image = Image.open(filepath)
-                text += pytesseract.image_to_string(image)
+                image = image.convert('L')
+                
+                enhancer = ImageEnhance.Contrast(image)
+                image = enhancer.enhance(2.0)
+                
+                enhancer = ImageEnhance.Sharpness(image)
+                image = enhancer.enhance(1.5)
+                
+                text = pytesseract.image_to_string(image, config='--psm 6 --oem 3')
         except Exception as e:
             print(f"Error extracting text from {filepath}: {e}")
+            import traceback
+            traceback.print_exc()
             return None
+        
+        if text and len(text) > 10:
+            print(f"  ✓ Successfully extracted {len(text)} characters, {len(text.split())} words")
+        else:
+            print(f"  ⚠ Warning: Only {len(text)} characters extracted")
+        
         return text.strip()
     
     def extract_features(self, text, doc_type):

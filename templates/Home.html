@@ -9,7 +9,7 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background: url('{{ url_for("static", filename="about_us.jpg") }}') no-repeat center center fixed;
+            background: url('{{ url_for("static", filename="night_plants_bg.png") }}') no-repeat center center fixed;
             background-size: cover;
             margin: 0;
             min-height: 100vh;
@@ -19,14 +19,15 @@
         .container {
             max-width: 850px;
             margin: 50px auto;
-            background: rgba(0, 0, 0, 0.65);
+            background: rgba(0, 0, 0, 0.7);
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
         }
 
         a.button {
-            background-color: #1e83ee;
+            background-color: #d4a574;
             color: white;
             text-decoration: none;
             padding: 12px 25px;
@@ -36,16 +37,20 @@
         }
 
         a.button:hover {
-            background-color: #0056b3;
+            background-color: #b8935f;
             transform: scale(1.05);
         }
 
         h1 {
-            color: #1e83ee;
+            color: #d4a574;
         }
 
         h2 {
-            color: #23d5ab;
+            color: #f0c896;
+        }
+
+        h3 {
+            color: #e6b884;
         }
     </style>
 </head>
