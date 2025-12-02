@@ -7,7 +7,6 @@ import pytesseract
 from pdf2image import convert_from_path
 from PIL import Image
 
-# Configuration
 TEXT_MODEL_NAME = 'qwen:1.8b'
 EMBEDDING_MODEL_NAME = 'qwen:1.8b'
 VECTOR_DIMENSION = 2048
@@ -17,12 +16,10 @@ POPPLER_PATH = os.path.join(os.getcwd(), 'poppler-25.07.0', 'Library', 'bin')
 TESSERACT_PATH = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
 
-# Global state
 index = None
 metadata_store = {}
 
 def init_chatbot():
-    """Initializes the FAISS index and metadata store."""
     global index, metadata_store
     
     if os.path.exists(INDEX_FILE) and os.path.exists(METADATA_FILE):
@@ -36,7 +33,6 @@ def init_chatbot():
         metadata_store = {}
 
 def extract_text_from_file(filepath):
-    """Extracts text from PDF or Image files."""
     text = ""
     try:
         if filepath.lower().endswith('.pdf'):
@@ -51,12 +47,11 @@ def extract_text_from_file(filepath):
         return None
     
     print(f"--- Extracted Text from {filepath} ---")
-    print(text[:500]) # Log first 500 chars
+    print(text[:500])
     print("--------------------------------------")
     return text.strip()
 
 def clear_knowledge_base():
-    """Clears the current FAISS index and metadata."""
     global index, metadata_store
     print("Clearing knowledge base...")
     index = faiss.IndexFlatL2(VECTOR_DIMENSION)
@@ -64,7 +59,6 @@ def clear_knowledge_base():
     save_knowledge_base()
 
 def add_document_to_knowledge_base(filepath, filename):
-    """Extracts text, embeds it, and adds it to the FAISS index."""
     global index, metadata_store
     
     if index is None:
@@ -74,7 +68,6 @@ def add_document_to_knowledge_base(filepath, filename):
     if not text:
         return False, "Failed to extract text."
 
-    # Create chunks with overlap for better context retention
     chunk_size = 500
     overlap = 50
     words = text.split()
@@ -88,20 +81,17 @@ def add_document_to_knowledge_base(filepath, filename):
     
     for chunk in chunks:
         try:
-            # Generate embedding
             result = ollama.embeddings(model=EMBEDDING_MODEL_NAME, prompt=chunk)
             vector = result['embedding']
             vector_np = np.array([vector]).astype('float32')
             
-            # Add to FAISS
             vector_id = index.ntotal
             index.add(vector_np)
             
-            # Store metadata
             metadata_store[vector_id] = {
                 "filename": filename,
                 "content": chunk,
-                "full_text_snippet": text[:200] + "..." # Store a snippet for reference
+                "full_text_snippet": text[:200] + "..."
             }
             successful_chunks += 1
         except Exception as e:
@@ -116,7 +106,6 @@ def add_document_to_knowledge_base(filepath, filename):
         return False, error_msg
 
 def save_knowledge_base():
-    """Persists the FAISS index and metadata."""
     global index, metadata_store
     if index:
         faiss.write_index(index, INDEX_FILE)
@@ -124,7 +113,6 @@ def save_knowledge_base():
             pickle.dump(metadata_store, f)
 
 def query_chatbot(user_query):
-    """Queries the knowledge base and generates a response."""
     global index, metadata_store
     
     if index is None:
@@ -134,12 +122,10 @@ def query_chatbot(user_query):
         return "I haven't learned any documents yet. Please upload one first!"
 
     try:
-        # Embed query
         result = ollama.embeddings(model=EMBEDDING_MODEL_NAME, prompt=user_query)
         query_vector = np.array([result['embedding']]).astype('float32')
         
-        # Search FAISS
-        k = 3 # Retrieve top 3 chunks
+        k = 3
         distances, indices = index.search(query_vector, k)
         
         retrieved_context = ""
@@ -150,7 +136,6 @@ def query_chatbot(user_query):
         if not retrieved_context:
             return "I couldn't find any relevant information in the uploaded documents."
 
-        # Generate answer with LLM
         prompt = f"""
 You are an intelligent document analysis assistant. Your goal is to answer the user's question accurately using ONLY the provided context.
 Pay close attention to specific details like account numbers, names, dates, and IDs.

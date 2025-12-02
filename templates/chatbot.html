@@ -420,10 +420,10 @@
           <br><br>
           <strong>You can:</strong>
           <ul style="margin-top: 10px; margin-left: 20px;">
-            <li>📄 Upload a document using the button below</li>
-            <li>💬 Ask me questions about document verification</li>
-            <li>✅ Get structured verification reports</li>
-            <li>🔍 Verify PAN cards, Aadhaar, GST certificates, and more</li>
+            <li>Upload a document using the button below</li>
+            <li>Ask me questions about document verification</li>
+            <li>Get structured verification reports</li>
+            <li>Verify PAN cards, Aadhaar, GST certificates, and more</li>
           </ul>
         </div>
       </div>
@@ -458,7 +458,6 @@
         display.textContent = `Selected: ${selectedFile.name}`;
         display.classList.add('active');
 
-        // Automatically upload the file
         uploadDocument();
       }
     }
@@ -469,13 +468,11 @@
         return;
       }
 
-      // Add user message showing upload
-      addMessage(`📄 Uploading document: ${selectedFile.name}`, 'user');
+      addMessage(`Uploading document: ${selectedFile.name}`, 'user');
 
       const formData = new FormData();
       formData.append('file', selectedFile);
 
-      // Show typing indicator
       const typingIndicator = document.getElementById('typingIndicator');
       typingIndicator.classList.add('active');
 
@@ -492,15 +489,14 @@
         if (data.status === 'success') {
           displayVerificationReport(data.verification);
         } else {
-          addMessage(`❌ Error: ${data.error || 'Failed to process document'}`, 'bot');
+          addMessage(`Error: ${data.error || 'Failed to process document'}`, 'bot');
         }
       } catch (error) {
         typingIndicator.classList.remove('active');
-        addMessage('❌ Error uploading document. Please try again.', 'bot');
+        addMessage('Error uploading document. Please try again.', 'bot');
         console.error('Upload error:', error);
       }
 
-      // Reset file input
       selectedFile = null;
       document.getElementById('fileInput').value = '';
       document.getElementById('fileNameDisplay').classList.remove('active');
@@ -548,7 +544,6 @@
       messageDiv.appendChild(bubbleDiv);
       messagesContainer.appendChild(messageDiv);
 
-      // Scroll to bottom
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
@@ -558,11 +553,9 @@
 
       if (!message) return;
 
-      // Add user message
       addMessage(message, 'user');
       input.value = '';
 
-      // Show typing indicator
       const typingIndicator = document.getElementById('typingIndicator');
       typingIndicator.classList.add('active');
 
@@ -599,7 +592,6 @@
       messageDiv.appendChild(bubbleDiv);
       messagesContainer.appendChild(messageDiv);
 
-      // Scroll to bottom
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 

@@ -2,10 +2,6 @@ import os
 import chatbot_logic
 
 def load_bronze_certificate():
-    """
-    Loads the Bronze Certificate User Manual into the chatbot's knowledge base.
-    This should be run once to initialize the chatbot with the manual.
-    """
     manual_path = os.path.join(os.getcwd(), 'User_Manual_Bronze_Certification_20.04.2022.pdf')
     
     if not os.path.exists(manual_path):
@@ -24,7 +20,7 @@ def load_bronze_certificate():
     )
     
     if success:
-        print(f"\n✓ SUCCESS: {message}")
+        print(f"\nSUCCESS: {message}")
         print("\nThe chatbot is now ready to answer questions about the Bronze Certificate!")
         print("You can ask questions like:")
         print("  - What is the bronze certification?")
@@ -32,7 +28,7 @@ def load_bronze_certificate():
         print("  - How do I apply for bronze certification?")
         return True
     else:
-        print(f"\n✗ ERROR: {message}")
+        print(f"\nERROR: {message}")
         return False
 
 if __name__ == "__main__":

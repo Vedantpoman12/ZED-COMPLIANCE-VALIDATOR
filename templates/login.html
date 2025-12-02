@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,10 +11,19 @@
     <style>
         /* ---- Background gradient (same as home.html) ---- */
         @keyframes gradientAnimation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
+
         :root {
             --primary-color: #1e83eeff;
             --secondary-color: #f5f5f5;
@@ -82,6 +91,7 @@
             opacity: 0.8;
             transition: opacity 0.3s;
         }
+
         .social-icons a:hover {
             opacity: 1;
         }
@@ -93,7 +103,7 @@
             flex-direction: column;
             justify-content: center;
         }
-        
+
         .login-form-panel h2 {
             color: var(--text-color);
             font-size: 2em;
@@ -149,10 +159,11 @@
             color: var(--primary-color);
             text-decoration: none;
         }
+
         .options a:hover {
             text-decoration: underline;
         }
-        
+
         .btn {
             display: flex;
             justify-content: center;
@@ -173,6 +184,7 @@
         .btn-primary {
             background-color: var(--primary-color);
         }
+
         .btn-primary:hover {
             background-color: #0056b3;
         }
@@ -183,6 +195,7 @@
             border: 1px solid var(--light-gray);
             margin-top: 15px;
         }
+
         .btn-google:hover {
             background-color: var(--secondary-color);
         }
@@ -198,6 +211,7 @@
             text-decoration: none;
             font-weight: 600;
         }
+
         .signup-link a:hover {
             text-decoration: underline;
         }
@@ -207,15 +221,18 @@
                 flex-direction: column;
                 min-height: 100vh;
             }
+
             .welcome-panel {
-                display: none; /* Hide the welcome panel on small screens for simplicity */
+                display: none;
             }
+
             .login-form-panel {
                 padding: 30px;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="login-wrapper">
         <div class="welcome-panel">
@@ -225,13 +242,26 @@
             </div>
             <div class="social-icons">
                 <a href="#">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                    </svg>
                 </a>
                 <a href="#">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z">
+                        </path>
+                    </svg>
                 </a>
                 <a href="#">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                        <rect x="2" y="9" width="4" height="12"></rect>
+                        <circle cx="4" cy="4" r="2"></circle>
+                    </svg>
                 </a>
             </div>
         </div>
@@ -255,7 +285,16 @@
                 </div>
                 <button type="submit" class="btn btn-primary">Log in</button>
                 <a href="#" class="btn btn-google">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.5 12.5c0-1.5-.2-2.8-.5-4H12v5.5h6.3c-.3 1.4-1.2 2.6-2.5 3.4v2.3h3.1c1.8-1.6 2.8-4 2.8-6.7z"/><path d="M12 23c3.2 0 5.9-1.1 7.8-2.9l-3.1-2.3c-1.1.7-2.5 1.2-4.1 1.2-3.2 0-5.8-2.1-6.8-5.1H2.1v2.3C4 20 7.7 23 12 23z"/><path d="M5.2 14.2c-.2-1.3-.2-2.6 0-3.9V8H2.1c-1.7 3.3-1.7 7.3 0 10.6l3.1-2.4z"/><path d="M12 5.1c1.7 0 3.3.6 4.5 1.8l2.8-2.8C17.9 1.4 15.2 0 12 0 7.7 0 4 3 2.1 7.3l3.1 2.4c1-3 3.6-5.1 6.8-5.1z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M22.5 12.5c0-1.5-.2-2.8-.5-4H12v5.5h6.3c-.3 1.4-1.2 2.6-2.5 3.4v2.3h3.1c1.8-1.6 2.8-4 2.8-6.7z" />
+                        <path
+                            d="M12 23c3.2 0 5.9-1.1 7.8-2.9l-3.1-2.3c-1.1.7-2.5 1.2-4.1 1.2-3.2 0-5.8-2.1-6.8-5.1H2.1v2.3C4 20 7.7 23 12 23z" />
+                        <path d="M5.2 14.2c-.2-1.3-.2-2.6 0-3.9V8H2.1c-1.7 3.3-1.7 7.3 0 10.6l3.1-2.4z" />
+                        <path
+                            d="M12 5.1c1.7 0 3.3.6 4.5 1.8l2.8-2.8C17.9 1.4 15.2 0 12 0 7.7 0 4 3 2.1 7.3l3.1 2.4c1-3 3.6-5.1 6.8-5.1z" />
+                    </svg>
                     Sign in with Google
                 </a>
             </form>
@@ -265,5 +304,5 @@
         </div>
     </div>
 </body>
-</html>
 
+</html>

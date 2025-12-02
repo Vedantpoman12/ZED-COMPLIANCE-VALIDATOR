@@ -3,26 +3,18 @@ import pytesseract
 from PIL import Image
 from pdf2image import convert_from_path
 import os
-
 import re
 
-# ---------- CONFIGURATION ----------
-# UPDATE THIS PATH TO YOUR TESSERACT EXECUTABLE
-# Example: r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 TESSERACT_PATH = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
-# Set the tesseract path
 pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
 
-
-import chatbot_logic  # <--- NEW IMPORT
+import chatbot_logic
 
 app = Flask(__name__)
 
-# Initialize Chatbot Knowledge Base
 chatbot_logic.init_chatbot()
 
-# Load Bronze Certificate User Manual if not already loaded
 import os as _os
 bronze_cert_path = _os.path.join(_os.getcwd(), 'User_Manual_Bronze_Certification_20.04.2022.pdf')
 if _os.path.exists(bronze_cert_path) and chatbot_logic.index.ntotal == 0:
@@ -32,32 +24,25 @@ if _os.path.exists(bronze_cert_path) and chatbot_logic.index.ntotal == 0:
         'User_Manual_Bronze_Certification_20.04.2022.pdf'
     )
     if success:
-        print(f"✓ {msg}")
+        print(f"{msg}")
     else:
-        print(f"✗ Failed to load manual: {msg}")
+        print(f"Failed to load manual: {msg}")
 
-# ---------- DEFAULT (Landing) PAGE ----------
 @app.route('/')
 def default():
     return render_template('default.html')
 
-
-
-# ---------- HOME PAGE ----------
 @app.route('/home')
 def home():
     return render_template('home.html')
 
-# ---------- INDEX PAGE (after login) ----------
 @app.route('/index')
 def index():
     return render_template('index.html')
 
-# ---------- CHATBOT PAGE ----------
 @app.route('/chatbot')
 def chatbot():
     return render_template('chatbot.html')
-
 
 @app.route('/ocr', methods=['POST'])
 def ocr_upload():
@@ -77,7 +62,6 @@ def ocr_upload():
 
             text = ""
             if file.filename.lower().endswith('.pdf'):
-                # Define Poppler path
                 poppler_path = os.path.join(os.getcwd(), 'poppler-25.07.0', 'Library', 'bin')
                 pages = convert_from_path(filepath, poppler_path=poppler_path)
                 for page in pages:
@@ -86,10 +70,8 @@ def ocr_upload():
                 image = Image.open(filepath)
                 text = pytesseract.image_to_string(image)
 
-            # Convert backslashes to forward slashes for web URL
             web_image_path = filepath.replace('\\', '/')
             
-            # Verify PAN Card
             verification_result = verify_pan_card(text)
             
             results.append({
@@ -101,14 +83,9 @@ def ocr_upload():
     return render_template('result.html', results=results)
 
 def verify_pan_card(ocr_text):
-    """
-    Verifies if the extracted text contains a valid PAN card number.
-    PAN Format: 5 letters, 4 numbers, 1 letter (e.g., ABCDE1234F)
-    """
     if not ocr_text:
         return {'status': 'Invalid', 'pan_number': None, 'message': 'No text extracted'}
     
-    # Regex pattern for PAN card
     pan_pattern = r'[A-Z]{5}[0-9]{4}[A-Z]{1}'
     
     match = re.search(pan_pattern, ocr_text)
@@ -168,13 +145,6 @@ def api_ocr_upload():
 
 @app.route('/api/verify-document', methods=['POST'])
 def verify_document():
-    """
-    AI Document Verification Assistant endpoint
-    Returns structured verification report with:
-    - Document Summary
-    - Verification Status
-    - Key Findings & Next Steps
-    """
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'}), 400
     
@@ -190,7 +160,6 @@ def verify_document():
         filepath = os.path.join(upload_folder, file.filename)
         file.save(filepath)
 
-        # Extract text from document
         text = ""
         try:
             if file.filename.lower().endswith('.pdf'):
@@ -206,18 +175,15 @@ def verify_document():
 
         web_image_path = '/' + filepath.replace('\\', '/')
         
-        # Generate structured verification report
         verification_report = generate_verification_report(text, file.filename)
         verification_report['image_path'] = web_image_path
         
-        # --- NEW: Learn from the document ---
-        chatbot_logic.clear_knowledge_base() # Clear previous context
+        chatbot_logic.clear_knowledge_base()
         success, message = chatbot_logic.add_document_to_knowledge_base(filepath, file.filename)
         if success:
             verification_report['learning_status'] = "Document successfully learned by the chatbot!"
         else:
             verification_report['learning_status'] = f"Warning: Could not learn document ({message})"
-        # ------------------------------------
 
         return jsonify({
             'status': 'success',
@@ -239,10 +205,6 @@ def chat():
     return jsonify({'response': response})
 
 def generate_verification_report(text, filename):
-    """
-    Generates a structured verification report for the document
-    """
-    # Determine document type
     doc_type = "Document"
     is_pan_document = False
     
@@ -254,10 +216,8 @@ def generate_verification_report(text, filename):
     elif 'gst' in filename.lower() or 'GSTIN' in text.upper() or 'GOODS AND SERVICES TAX' in text.upper():
         doc_type = "GST Certificate"
     
-    # Verify PAN card ONLY if it looks like a PAN document or we found a PAN number
     pan_verification = verify_pan_card(text)
     
-    # Generate Document Summary
     summary = f"This appears to be a {doc_type}. "
     if text.strip():
         word_count = len(text.split())
@@ -266,7 +226,6 @@ def generate_verification_report(text, filename):
     else:
         summary += "However, no text content could be extracted from the document image."
     
-    # Determine Verification Status
     status = ""
     statusClass = ""
     statusExplanation = ""
@@ -288,7 +247,6 @@ def generate_verification_report(text, filename):
         statusClass = "status-verified"
         statusExplanation = f"The document has been processed as a {doc_type}. Text extraction was successful. You can now ask questions about its content."
     
-    # Generate Key Findings
     findings = []
     
     if is_pan_document and pan_verification['status'] == 'Valid':
@@ -308,7 +266,6 @@ def generate_verification_report(text, filename):
         findings.append(f"<strong>Text Extraction:</strong> Successfully extracted {len(text.split())} words")
         findings.append(f"<strong>Content Analysis:</strong> Document contains readable text. You can ask the chatbot for specific details.")
         
-        # Check for common keywords
         if 'name' in text.lower():
             findings.append("<strong>Name Field:</strong> Detected in document")
         if 'date' in text.lower() or re.search(r'\d{2}[/-]\d{2}[/-]\d{4}', text):

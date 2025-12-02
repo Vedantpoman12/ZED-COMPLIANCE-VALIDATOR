@@ -3,7 +3,6 @@ import pytesseract
 from pdf2image import convert_from_path
 from PIL import Image
 
-# Configuration
 POPPLER_PATH = os.path.join(os.getcwd(), 'poppler-25.07.0', 'Library', 'bin')
 TESSERACT_PATH = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
@@ -14,7 +13,6 @@ def test_pdf_extraction():
         print("ERROR: Poppler path does not exist!")
         return
 
-    # Find a PDF in static/uploads
     upload_folder = os.path.join('static', 'uploads')
     pdf_files = [f for f in os.listdir(upload_folder) if f.lower().endswith('.pdf')]
     

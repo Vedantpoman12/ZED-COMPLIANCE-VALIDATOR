@@ -10,8 +10,6 @@ try:
     print(f"Successfully loaded metadata from '{METADATA_FILE}'.")
     print(f"Total documents processed: {len(data)}\n")
     
-    # Pretty-print the data
-    # We use json.dumps for nice formatting
     print(json.dumps(data, indent=2))
 
 except FileNotFoundError:

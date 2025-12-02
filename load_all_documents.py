@@ -2,15 +2,10 @@ import os
 import chatbot_logic
 
 def load_all_documents():
-    """
-    Loads both the Bronze Certificate Manual and General Instructions 
-    into the chatbot's knowledge base.
-    """
     print("="*60)
     print("INITIALIZING CHATBOT WITH ALL DOCUMENTS")
     print("="*60)
     
-    # Initialize chatbot
     print("\n[Step 1/3] Initializing chatbot...")
     chatbot_logic.init_chatbot()
     
@@ -34,7 +29,7 @@ def load_all_documents():
         print(f"\n[Step {i}/3] Loading {doc['name']}...")
         
         if not os.path.exists(doc_path):
-            print(f"  ⚠ WARNING: File not found at {doc_path}")
+            print(f"  WARNING: File not found at {doc_path}")
             failed_loads.append(doc['name'])
             continue
         
@@ -47,29 +42,29 @@ def load_all_documents():
         )
         
         if success:
-            print(f"  ✓ SUCCESS: {message}")
+            print(f"  SUCCESS: {message}")
             successful_loads += 1
         else:
-            print(f"  ✗ ERROR: {message}")
+            print(f"  ERROR: {message}")
             failed_loads.append(doc['name'])
     
     print("\n" + "="*60)
     print("LOADING SUMMARY")
     print("="*60)
-    print(f"✓ Successfully loaded: {successful_loads} document(s)")
+    print(f"Successfully loaded: {successful_loads} document(s)")
     if failed_loads:
-        print(f"✗ Failed to load: {', '.join(failed_loads)}")
+        print(f"Failed to load: {', '.join(failed_loads)}")
     
     if successful_loads > 0:
-        print("\n🎉 The chatbot is now ready to answer questions!")
+        print("\nThe chatbot is now ready to answer questions!")
         print("\nYou can ask about:")
-        print("  • Bronze certification requirements and procedures")
-        print("  • General instructions and guidelines")
-        print("  • Document verification processes")
-        print("  • Any topics covered in the loaded documents")
+        print("   Bronze certification requirements and procedures")
+        print("   General instructions and guidelines")
+        print("   Document verification processes")
+        print("   Any topics covered in the loaded documents")
         return True
     else:
-        print("\n⚠ No documents were loaded successfully.")
+        print("\n No documents were loaded successfully.")
         return False
 
 if __name__ == "__main__":

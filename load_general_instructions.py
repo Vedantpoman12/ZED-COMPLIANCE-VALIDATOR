@@ -2,10 +2,6 @@ import os
 import chatbot_logic
 
 def load_general_instructions():
-    """
-    Loads the General Instructions PDF into the chatbot's knowledge base.
-    This should be run to add general instructions to the chatbot.
-    """
     instructions_path = os.path.join(os.getcwd(), 'General Instructions.pdf')
     
     if not os.path.exists(instructions_path):
@@ -24,7 +20,7 @@ def load_general_instructions():
     )
     
     if success:
-        print(f"\n✓ SUCCESS: {message}")
+        print(f"\nSUCCESS: {message}")
         print("\nThe chatbot now has access to General Instructions!")
         print("You can ask questions about:")
         print("  - General guidelines and procedures")
@@ -32,7 +28,7 @@ def load_general_instructions():
         print("  - Any topics covered in the General Instructions document")
         return True
     else:
-        print(f"\n✗ ERROR: {message}")
+        print(f"\nERROR: {message}")
         return False
 
 if __name__ == "__main__":
