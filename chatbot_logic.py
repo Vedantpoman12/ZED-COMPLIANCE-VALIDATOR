@@ -33,21 +33,42 @@ def init_chatbot():
         metadata_store = {}
 
 def extract_text_from_file(filepath):
+    from PIL import ImageEnhance
+    
     text = ""
     try:
         if filepath.lower().endswith('.pdf'):
-            pages = convert_from_path(filepath, poppler_path=POPPLER_PATH)
+            pages = convert_from_path(filepath, poppler_path=POPPLER_PATH, dpi=300)
             for page in pages:
-                text += pytesseract.image_to_string(page) + "\n"
+                page = page.convert('L')
+                
+                enhancer = ImageEnhance.Contrast(page)
+                page = enhancer.enhance(2.0)
+                
+                enhancer = ImageEnhance.Sharpness(page)
+                page = enhancer.enhance(1.5)
+                
+                page_text = pytesseract.image_to_string(page, config='--psm 6 --oem 3')
+                text += page_text + "\n"
         else:
             image = Image.open(filepath)
-            text += pytesseract.image_to_string(image)
+            image = image.convert('L')
+            
+            enhancer = ImageEnhance.Contrast(image)
+            image = enhancer.enhance(2.0)
+            
+            enhancer = ImageEnhance.Sharpness(image)
+            image = enhancer.enhance(1.5)
+            
+            text = pytesseract.image_to_string(image, config='--psm 6 --oem 3')
     except Exception as e:
         print(f"Error extracting text from {filepath}: {e}")
         return None
     
     print(f"--- Extracted Text from {filepath} ---")
-    print(text[:500])
+    print(f"Length: {len(text)} characters")
+    if text:
+        print(text[:500])
     print("--------------------------------------")
     return text.strip()
 

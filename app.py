@@ -5,6 +5,13 @@ from pdf2image import convert_from_path
 import os
 import re
 
+try:
+    from train_authenticity_model import DocumentAuthenticityDetector
+    authenticity_detector = DocumentAuthenticityDetector()
+except Exception as e:
+    print(f"Warning: Authenticity detector not available: {e}")
+    authenticity_detector = None
+
 TESSERACT_PATH = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
@@ -62,13 +69,25 @@ def ocr_upload():
 
             text = ""
             if file.filename.lower().endswith('.pdf'):
+                from PIL import ImageEnhance
                 poppler_path = os.path.join(os.getcwd(), 'poppler-25.07.0', 'Library', 'bin')
-                pages = convert_from_path(filepath, poppler_path=poppler_path)
+                pages = convert_from_path(filepath, poppler_path=poppler_path, dpi=300)
                 for page in pages:
-                    text += pytesseract.image_to_string(page)
+                    page = page.convert('L')
+                    enhancer = ImageEnhance.Contrast(page)
+                    page = enhancer.enhance(2.0)
+                    enhancer = ImageEnhance.Sharpness(page)
+                    page = enhancer.enhance(1.5)
+                    text += pytesseract.image_to_string(page, config='--psm 6 --oem 3')
             else:
+                from PIL import ImageEnhance
                 image = Image.open(filepath)
-                text = pytesseract.image_to_string(image)
+                image = image.convert('L')
+                enhancer = ImageEnhance.Contrast(image)
+                image = enhancer.enhance(2.0)
+                enhancer = ImageEnhance.Sharpness(image)
+                image = enhancer.enhance(1.5)
+                text = pytesseract.image_to_string(image, config='--psm 6 --oem 3')
 
             web_image_path = filepath.replace('\\', '/')
             
@@ -207,14 +226,26 @@ def chat():
 def generate_verification_report(text, filename):
     doc_type = "Document"
     is_pan_document = False
+    is_aadhaar_document = False
     
     if 'pan' in filename.lower() or 'INCOME TAX' in text.upper() or 'PERMANENT ACCOUNT NUMBER' in text.upper():
         doc_type = "PAN Card"
         is_pan_document = True
     elif 'aadhaar' in filename.lower() or 'UIDAI' in text.upper() or 'UNIQUE IDENTIFICATION AUTHORITY' in text.upper():
         doc_type = "Aadhaar Card"
+        is_aadhaar_document = True
     elif 'gst' in filename.lower() or 'GSTIN' in text.upper() or 'GOODS AND SERVICES TAX' in text.upper():
         doc_type = "GST Certificate"
+    
+    authenticity_result = None
+    if authenticity_detector and (is_pan_document or is_aadhaar_document):
+        try:
+            filepath = f"static/uploads/{filename}" if not filename.startswith("static") else filename
+            if os.path.exists(filepath):
+                doc_type_for_check = "PAN" if is_pan_document else "AADHAAR"
+                authenticity_result = authenticity_detector.verify_document(filepath, doc_type_for_check)
+        except Exception as e:
+            print(f"Authenticity check error: {e}")
     
     pan_verification = verify_pan_card(text)
     
@@ -248,6 +279,13 @@ def generate_verification_report(text, filename):
         statusExplanation = f"The document has been processed as a {doc_type}. Text extraction was successful. You can now ask questions about its content."
     
     findings = []
+    
+    if authenticity_result:
+        if authenticity_result['is_authentic']:
+            findings.append(f"<strong>Authenticity Check:</strong> <span style='color: #4ade80;'>Document appears AUTHENTIC</span> (Confidence: {authenticity_result['confidence']:.1%})")
+        else:
+            findings.append(f"<strong>Authenticity Check:</strong> <span style='color: #f87171;'>Document may be FAKE or ALTERED</span> (Confidence: {authenticity_result['confidence']:.1%})")
+        findings.append(f"<strong>Reason:</strong> {authenticity_result['reason']}")
     
     if is_pan_document and pan_verification['status'] == 'Valid':
         findings.append(f"<strong>PAN Number Identified:</strong> {pan_verification['pan_number']}")
