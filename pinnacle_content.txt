@@ -1,0 +1,75 @@
+--- PARAGRAPHS ---
+Program: 
+Academic Year/Semester: __________________________
+Section: ______
+Project Title: _________________________________________________
+Team Members & App ID:
+1. [Name] – [App ID]
+2. [Name] – [App ID]
+3. [Name] – [App ID]
+4. [Name] – [App ID]
+Table of Contents 
+                                                                                                                                                                                Executive Summary
+Use this section to provide a concise overview (150–250 words) of the project: problem, approach, key results, and impact.
+Project Title: __________________________
+Team Members & Roles:
+1. [Name] – [Role]
+2. [Name] – [Role]
+3. [Name] – [Role]
+4. [Name] – [Role]
+Objectives (bullet points):
+• __________________________
+• __________________________
+Target Users: __________________________
+Technical Architecture (brief): __________________________
+Deployment Strategy: __________________________
+Expected Outcomes: __________________________
+Abstract
+A 150–200 word summary of the project motivation, methodology, and outcomes.
+1. Introduction
+1.1 Background & Context: Describe the domain, motivation, and relevance.
+1.2 Problem Statement: Clearly articulate the problem being solved.
+1.3 Scope & Limitations: Define boundaries of the work.
+2. Literature Review / Related Work
+Summarize 4–6 relevant sources; compare methods, datasets, and findings.
+3. Requirements
+3.1 Functional Requirements: Features the system must provide.
+3.2 Non-functional Requirements: Performance, security, usability, etc.
+4. Data
+4.1 Data Sources: Public datasets, surveys, sensors, etc.
+4.2 Data Description: Variables, size, collection period.
+4.3 Data Preprocessing: Cleaning, transformation, feature engineering.
+5. Methodology
+5.1 System Architecture: Provide a block diagram and description.
+5.2 Algorithms / Models: Explain choices and parameters.
+5.3 Tools & Technologies: Programming languages, libraries, platforms.
+6. Design
+6.1 UI/UX Design: Screens, wireframes.
+6.2 Database Design: ERD, schema.
+6.3 API / Integration Design: Endpoints, data flow.
+7. Implementation
+Describe key components, modules, and noteworthy code segments.
+8. Testing & Evaluation
+8.1 Test Plan: Unit, integration, system, and user testing.
+8.2 Test Cases & Results: Summaries and defect fixes.
+8.3 Performance Metrics: Accuracy, latency, throughput, etc.
+9. Results
+Present tables/figures; compare against baseline; include screenshots.
+10. Conclusion & Future Work
+Summarize contributions and propose next steps.
+11. Ethics, Safety & Compliance
+Address data privacy, bias, accessibility, and safety considerations.
+12. Budget & Resources
+Estimated costs, tools/licenses, hardware, cloud usage.
+References
+Use APA/IEEE style. Include DOIs/URLs where applicable.
+Appendices
+A. Supplementary tables/figures
+B. Code repository link and commit log
+C. User manual / installation guide
+
+--- TABLES ---
+Sr. No. | Topic | Page No.
+ |  | 
+ |  | 
+--------------------
